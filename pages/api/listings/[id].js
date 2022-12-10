@@ -14,10 +14,6 @@ export default async (req, res) => {
 
     let lineItems = [
       {item: 'Listing price', amount: listing.price.amount},
-      {
-        item: 'Marketplace fees (10%)',
-        amount: Math.ceil(listing.price.amount * 0.1),
-      },
     ];
 
     let totalAmount = lineItems

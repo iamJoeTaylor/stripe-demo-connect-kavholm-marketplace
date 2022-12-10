@@ -17,7 +17,7 @@ export default requireAuthEndpoint(async (req, res) => {
     let amount = listing.totalAmount;
     // let amount = 4000; // Fixed amount to demo Affirm limits
     let currency = listing.price.currency;
-    let paymentMethodTypes = ['card', 'affirm'];
+    let paymentMethodTypes = ['card', 'link'];
 
     // if (currency === 'USD' && amount >= 5000 && amount < 3000000) {
     //   paymentMethodTypes.push('affirm');

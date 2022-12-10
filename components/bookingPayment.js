@@ -33,7 +33,7 @@ class BookingPayment extends Component {
       const { error } = await this.props.stripe.confirmPayment({
         elements: this.props.elements,
         confirmParams: {
-          return_url: "http://localhost:3000",
+          return_url: "http://localhost:3000/listings/confirmed",
         },
       });
 

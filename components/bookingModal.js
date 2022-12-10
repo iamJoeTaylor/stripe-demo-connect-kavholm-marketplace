@@ -60,18 +60,9 @@ class BookingModal extends Component {
             <div className="completed">
               <img src="/static/confirmed.svg" width="50" />
               <h1>
-                Pay{' '}
-                <NumberFormat
-                  value={this.props.listing.totalAmount / 100}
-                  displayType={'text'}
-                  thousandSeparator={true}
-                  prefix={this.props.listing.price.currency + ' '}
-                />{' '}
-                to buy
+                Book your stay
               </h1>
 
-              <br />
-              <br />
 
               <ElementsConsumer>
                 {({stripe, elements}) => (
