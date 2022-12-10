@@ -2,15 +2,15 @@ const env = require('dotenv').config({path: './.env'});
 
 module.exports = {
   target: 'server',
-  webpack5: false,
-  webpack: (config) => {
-    // Fixes npm packages that depend on `fs` module
-    config.node = {
-      fs: 'empty',
-    };
+  //webpack5: false,
+  // webpack: (config) => {
+  //   // Fixes npm packages that depend on `fs` module
+  //   config.node = {
+  //     fs: 'empty',
+  //   };
 
-    return config;
-  },
+  //   return config;
+  // },
 
   experimental: {publicDirectory: true},
   serverRuntimeConfig: {},

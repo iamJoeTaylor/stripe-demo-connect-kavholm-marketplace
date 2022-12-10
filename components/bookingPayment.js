@@ -1,8 +1,11 @@
 import React, {Component} from 'react';
 import Link from 'next/link';
 
-import {CardElement, injectStripe} from 'react-stripe-elements';
-import PaymentRequestForm from './paymentRequestForm';
+import {
+  PaymentElement,
+  useStripe,
+  useElements
+} from "@stripe/react-stripe-js";
 import NumberFormat from 'react-number-format';
 import API from '../helpers/api';
 import logger from '../helpers/logger';
@@ -27,35 +30,21 @@ class BookingPayment extends Component {
         isProcessing: true,
       });
 
-      let transactionParams = {
-        listingId: this.props.listing.id,
-      };
+      const { error } = await this.props.stripe.confirmPayment({
+        elements: this.props.elements,
+        confirmParams: {
+          return_url: "http://localhost:3000",
+        },
+      });
 
-      let req = await API.makeRequest(
-        'post',
-        `/api/transactions/new`,
-        transactionParams,
-      );
-
-      if (!req) {
-        throw new Error('Booking failed');
-        return;
-      }
-
-      let paymentRequestSecret = req.paymentRequestSecret;
-
-      this.props.stripe
-        .handleCardPayment(paymentRequestSecret)
-        .then((payload) => {
-          if (payload.error) {
-            logger.log('Booking failed.', payload.error);
-            this.setState({
-              error: `Payment failed: ${payload.error.message}`,
-            });
-          } else {
-            onBookingConfirmed && onBookingConfirmed(req.id);
-          }
+      if (error) {
+        logger.log('Booking failed.', error);
+        this.setState({
+          error: `Payment failed: ${error.message}`,
         });
+      } else {
+        onBookingConfirmed && onBookingConfirmed(req.id);
+      }
     } catch (err) {
       logger.log('Booking failed.', err);
       this.setState({
@@ -72,15 +61,8 @@ class BookingPayment extends Component {
 
     return (
       <form onSubmit={this.handleSubmit}>
-        <PaymentRequestForm
-          stripe={this.props.stripe}
-          amount={amount}
-          currency={currency.toLowerCase()}
-          onBookingConfirmed={this.props.onBookingConfirmed}
-        />
-
         <div className="card-info">
-          <CardElement style={{base: {fontSize: '18px', width: '100%'}}} />
+          <PaymentElement style={{base: {fontSize: '18px', width: '100%'}}} />
         </div>
         <button
           className="btn btn-primary"
@@ -106,7 +88,6 @@ class BookingPayment extends Component {
           .card-info {
             margin-bottom: 20px;
             padding: 10px 10px;
-            height: 44px;
             border-radius: 6px;
             box-shadow: 0px 0px 0px 1px rgb(224, 224, 224),
               0px 2px 4px 0px rgba(0, 0, 0, 0.07),
@@ -131,4 +112,4 @@ class BookingPayment extends Component {
     );
   }
 }
-export default injectStripe(BookingPayment);
+export default BookingPayment;

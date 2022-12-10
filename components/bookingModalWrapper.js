@@ -1,13 +1,14 @@
 import React, { Component } from "react";
 import BookingModal from "./bookingModal";
-import { Elements, StripeProvider, injectStripe } from "react-stripe-elements";
+import { loadStripe } from "@stripe/stripe-js";
+import { Elements } from "@stripe/react-stripe-js";
 import getConfig from "next/config";
 
 class BookingModalWrapper extends Component {
   constructor() {
     super();
     this.state = {
-      stripe: null
+      stripePromise: null
     };
   }
 
@@ -15,23 +16,24 @@ class BookingModalWrapper extends Component {
     // (componentDidMount only fires in browser/DOM environment)
     let stripePublicKey = getConfig().publicRuntimeConfig.stripe.publicKey;
 
-    if (!window.Stripe) {
-      return;
-    }
-
     this.setState({
-      stripe: window.Stripe(stripePublicKey)
+      stripePromise: loadStripe(stripePublicKey)
     });
   }
 
   render() {
-    return (
-      <StripeProvider stripe={this.state.stripe}>
-        <Elements>
+    if (this.props.req) {
+      return (
+        <Elements
+          stripe={this.state.stripePromise}
+          options={{clientSecret: this.props.req.paymentRequestSecret}}
+        >
           <BookingModal {...this.props} />
         </Elements>
-      </StripeProvider>
-    );
+      );
+    }
+
+    return null;
   }
 }
 export default BookingModalWrapper;

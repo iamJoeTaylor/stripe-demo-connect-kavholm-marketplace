@@ -12,41 +12,25 @@ export default requireAuthEndpoint(async (req, res) => {
   try {
     let {listingId} = req.body;
 
-    // Step 1: Get listing details
     let listing = await API.makeRequest('get', `/api/listings/${listingId}`);
 
     let amount = listing.totalAmount;
+    // let amount = 4000; // Fixed amount to demo Affirm limits
     let currency = listing.price.currency;
+    let paymentMethodTypes = ['card', 'affirm'];
 
-    // Step 2: Resolve hosts Stripe account id
-    let listingHostUser = storage
-      .get('users')
-      .find({userId: listing.authorId})
-      .pick('stripe')
-      .value();
-
-    if (!listingHostUser.stripe) {
-      throw new Error('No stripe account found for Host');
-      return;
-    }
-
-    let listingHostUserStripeUserId = listingHostUser.stripe.stripeUserId;
-
-    // Step 3: Make destination payment on Stripe where funds are taken from card and transferred to the host's Stripe account.
+    // if (currency === 'USD' && amount >= 5000 && amount < 3000000) {
+    //   paymentMethodTypes.push('affirm');
+    // }
 
     let payParams = {
-      payment_method_types: ['card'],
+      payment_method_types: paymentMethodTypes,
       amount: amount,
       currency: currency,
-      transfer_data: {
-        destination: listingHostUserStripeUserId,
-        amount: (amount - Math.ceil(amount * 0.1)),
-      },
     };
 
     const paymentIntent = await stripe.paymentIntents.create(payParams);
 
-    // Step 4: Create new transaction
     const transaction = {
       id: shortid.generate(),
       listingId: String(listingId),

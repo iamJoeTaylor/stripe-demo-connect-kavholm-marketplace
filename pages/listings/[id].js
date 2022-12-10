@@ -14,6 +14,7 @@ class Listing extends React.Component {
     super();
     this.state = {
       isBooking: false,
+      req: null,
       isBookingConfirmed: false,
       amount: 78600,
       transactionId: null,
@@ -34,9 +35,29 @@ class Listing extends React.Component {
     };
   }
 
-  handleBookingStartClick = () => {
+  handleBookingStartClick = async () => {
+    let req = this.state.req;
+
+    if (!req) {
+      let transactionParams = {
+        listingId: this.props.listing.id,
+      };
+
+      req = await API.makeRequest(
+        'post',
+        `/api/transactions/new`,
+        transactionParams,
+      );
+
+      if (!req) {
+        throw new Error('Booking failed');
+        return;
+      }
+    }
+
     this.setState({
       isBooking: true,
+      req: req,
     });
   };
 
@@ -62,6 +83,7 @@ class Listing extends React.Component {
         <div className="listings">
           <BookingModalWrapper
             isShown={this.state.isBooking}
+            req={this.state.req}
             onBookingConfirmed={this.onBookingConfirmed}
             isBookingConfirmed={this.state.isBookingConfirmed}
             transactionId={this.state.transactionId}

@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import Modal from 'react-modal';
+import { ElementsConsumer } from "@stripe/react-stripe-js";
 
 import BookingConfirmedModal from './bookingConfirmedModal';
 import BookingPayment from './bookingPayment';
@@ -10,8 +11,6 @@ Modal.setAppElement('.app');
 class BookingModal extends Component {
   constructor(props) {
     super();
-
-    this.state = {};
   }
 
   render() {
@@ -47,7 +46,7 @@ class BookingModal extends Component {
             bottom: 'auto',
             margin: '0 auto',
             border: 0,
-            maxWidth: 480,
+            maxWidth: 1024,
             textAlign: 'center',
             paddingTop: '70px',
             paddingBottom: '45px',
@@ -74,11 +73,17 @@ class BookingModal extends Component {
               <br />
               <br />
 
-              <BookingPayment
-                stripe={this.props.stripe}
-                listing={this.props.listing}
-                onBookingConfirmed={this.props.onBookingConfirmed}
-              />
+              <ElementsConsumer>
+                {({stripe, elements}) => (
+                  <BookingPayment
+                    stripe={stripe}
+                    elements={elements}
+                    listing={this.props.listing}
+                    onBookingConfirmed={this.props.onBookingConfirmed}
+                    req={this.props.req}
+                  />
+                )}
+              </ElementsConsumer>
             </div>
           )}
 
