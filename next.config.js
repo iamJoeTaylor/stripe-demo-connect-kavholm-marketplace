@@ -20,6 +20,6 @@ module.exports = {
     },
     isTestMode:
       process.env.STRIPE_PUBLIC_KEY &&
-      process.env.STRIPE_PUBLIC_KEY.indexOf('pk') > -1,
+      process.env.STRIPE_PUBLIC_KEY.indexOf('pk_test') > -1,
   },
 };

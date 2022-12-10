@@ -39,6 +39,7 @@ class BookingSearchForm extends Component {
         }
       >
         <select className="search dropdown-toggle">
+          <option>Tatooine</option>
           <option>Canada</option>
           <option>Denmark</option>
           <option>France</option>
